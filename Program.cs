@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using Nancy.Json;
 
@@ -58,8 +59,8 @@ namespace TesteAdmissional
                     Console.Write(item + " ");
                 }
                 Console.Write("\r\nE) Percentual de utilização dos elevadores A, B, C, D e E respectivamente: ");
-                Console.WriteLine(percentualA.ToString() + " " + percentualB.ToString() + " " + percentualC.ToString()
-                    + " " + percentualD.ToString() + " " + percentualE.ToString());
+                Console.WriteLine(percentualA.ToString() + "% " + percentualB.ToString() + "% " + percentualC.ToString()
+                    + "% " + percentualD.ToString() + "% " + percentualE.ToString() + "%");
 
             }
         }
@@ -67,8 +68,8 @@ namespace TesteAdmissional
         class Dados : IElevadorService
         {
             public int andar { get; set; }
-            public string elevador { get; set; }
-            public string turno { get; set; }
+            public char elevador { get; set; }
+            public char turno { get; set; }
 
             public List<int> andarMenosUtilizado(List<Dados> lista)
             {
@@ -76,21 +77,13 @@ namespace TesteAdmissional
                 int[] andares = new int[16];
 
                 // Verifica cada item da lista, e soma ao Array mais 1 ao andar correspondente
-                foreach (var item in lista)
+                foreach (var registro in lista)
                 {
-                    Dados registro = item;
                     andares[registro.andar] = andares[registro.andar] + 1;
                 }
 
                 // Encontra o andar com menos ocorrências
-                int menorOcorrencia = andares[0];
-                for (int i = 0; i < andares.Length; i++)
-                {
-                    if (andares[i] < menorOcorrencia)
-                    {
-                        menorOcorrencia = andares[i];
-                    }
-                }
+                int menorOcorrencia = andares.Min();
 
                 // Adiciona a List<int> os andares com menor ocorrência nos dados
                 for (int i = 0; i < andares.Length; i++)
@@ -108,26 +101,17 @@ namespace TesteAdmissional
             {
                 List<char> retorno = new List<char>();
                 char[] elevadores = { 'A', 'B', 'C', 'D', 'E' };
-                string stringElevadores = new string(elevadores);
                 int[] elevador = new int[5];
 
                 // verifica cada item e registra cada ocorrencia no elevador correspondente
-                foreach (var item in lista)
+                foreach (var registro in lista)
                 {
-                    Dados registro = item;
-                    int posicao = stringElevadores.IndexOf(registro.elevador);
+                    int posicao = Array.IndexOf(elevadores, registro.elevador);
                     elevador[posicao] = elevador[posicao] + 1;
                 }
 
                 // encontra a maior ocorrência
-                int maior = 0;
-                for (var i = 0; i < elevador.Length; i++)
-                {
-                    if (elevador[i] > maior)
-                    {
-                        maior = elevador[i];
-                    }
-                }
+                int maior = elevador.Max();
 
                 // Adiciona a List<char> os elevadore com maior ocorrência.
                 for (var i = 0; i < elevador.Length; i++)
@@ -145,26 +129,17 @@ namespace TesteAdmissional
             {
                 List<char> retorno = new List<char>();
                 char[] elevadores = { 'A', 'B', 'C', 'D', 'E' };
-                string stringElevadores = new string(elevadores);
                 int[] elevador = new int[5];
 
                 // verifica cada item e registra cada ocorrencia no elevador correspondente
-                foreach (var item in lista)
+                foreach (var registro in lista)
                 {
-                    Dados registro = item;
-                    int posicao = stringElevadores.IndexOf(registro.elevador);
+                    int posicao = Array.IndexOf(elevadores, registro.elevador);
                     elevador[posicao] = elevador[posicao] + 1;
                 }
 
                 // encontra a menor ocorrência
-                int menor = elevador[0];
-                for (var i = 0; i < elevador.Length; i++)
-                {
-                    if (elevador[i] < menor)
-                    {
-                        menor = elevador[i];
-                    }
-                }
+                int menor = elevador.Min();
 
                 // Adiciona a List<char> os elevadore com menor ocorrência.
                 for (var i = 0; i < elevador.Length; i++)
@@ -182,49 +157,45 @@ namespace TesteAdmissional
             {
                 float totalDeRegistros = lista.Count;
                 float registroElevador = 0;
-                float percentual = 0;
 
                 // Verifica se o item corresponde ao elevador e acrescenta +1
-                foreach (var item in lista)
+                foreach (var registro in lista)
                 {
-                    Dados registro = item;
-                    if (item.elevador == elevador.ToString())
+                    if (registro.elevador == elevador)
                     {
                         registroElevador++;
                     }
                 }
-                percentual = registroElevador / totalDeRegistros * 100;
+               
+                float percentual = registroElevador / totalDeRegistros * 100;
                 percentual = float.Parse(percentual.ToString("N2"));
+            
                 return percentual;
             }
+
             public float percentualDeUsoElevadorA(List<Dados> lista)
             {
-                float percentual = percentualDeUso(lista, 'A');
-                return percentual;
+                return percentualDeUso(lista, 'A');
             }
 
             public float percentualDeUsoElevadorB(List<Dados> lista)
             {
-                float percentual = percentualDeUso(lista, 'B');
-                return percentual;
+                return percentualDeUso(lista, 'B');
             }
 
             public float percentualDeUsoElevadorC(List<Dados> lista)
             {
-                float percentual = percentualDeUso(lista, 'C');
-                return percentual;
+                return percentualDeUso(lista, 'C');
             }
 
             public float percentualDeUsoElevadorD(List<Dados> lista)
             {
-                float percentual = percentualDeUso(lista, 'D');
-                return percentual;
+                return percentualDeUso(lista, 'D');
             }
 
             public float percentualDeUsoElevadorE(List<Dados> lista)
             {
-                float percentual = percentualDeUso(lista, 'E');
-                return percentual;
+                return percentualDeUso(lista, 'E');
             }
 
             public List<char> periodoMaiorFluxoElevadorMaisFrequentado(List<Dados> lista)
@@ -232,32 +203,23 @@ namespace TesteAdmissional
                 var elevadoresMaiorFluxo = elevadorMaisFrequentado(lista);
                 List<char> retorno = new List<char>();
                 char[] charTurnos = { 'M', 'V', 'N' };
-                string stringTurnos = new string(charTurnos);
 
                 foreach (var elevador in elevadoresMaiorFluxo)
                 {
 
                     // verifica cada item comparando o elevador e registra a ocorrencia de cada turno
                     int[] turno = new int[3];
-                    foreach (var item in lista)
+                    foreach (var registro in lista)
                     {
-                        Dados registro = item;
-                        if (registro.elevador == elevador.ToString())
+                        if (registro.elevador == elevador)
                         {
-                            int posicao = stringTurnos.IndexOf(registro.turno);
+                            int posicao = Array.IndexOf(charTurnos, registro.turno);
                             turno[posicao] = turno[posicao] + 1;
                         }
                     }
 
                     // encontra a maior ocorrência
-                    int maior = turno[0];
-                    for (var i = 0; i < turno.Length; i++)
-                    {
-                        if (turno[i] > maior)
-                        {
-                            turno[i] = turno[i];
-                        }
-                    }
+                    int maior = turno.Max();
 
                     // Adiciona a List<char> os turnos com maior ocorrência.
                     for (var i = 0; i < turno.Length; i++)
@@ -267,8 +229,8 @@ namespace TesteAdmissional
                             retorno.Add(charTurnos[i]);
                         }
                     }
-
                 }
+
                 return retorno;
 
             }
@@ -277,27 +239,17 @@ namespace TesteAdmissional
             {
                 List<char> retorno = new List<char>();
                 char[] charTurnos = { 'M', 'V', 'N' };
-                string stringTurnos = new string(charTurnos);
                 int[] turno = new int[3];
 
                 // verifica cada registro e acrescenta 1 no turno correspondente
-                foreach (var item in lista)
+                foreach (var registro in lista)
                 {
-                    Dados registro = item;
-                    int posicao = stringTurnos.IndexOf(registro.turno);
+                    int posicao = Array.IndexOf(charTurnos, registro.turno);
                     turno[posicao] = turno[posicao] + 1;
-
                 }
 
                 // encontra a maior ocorrência
-                int maior = turno[0];
-                for (var i = 0; i < turno.Length; i++)
-                {
-                    if (turno[i] > maior)
-                    {
-                        turno[i] = turno[i];
-                    }
-                }
+                int maior = turno.Max();
 
                 // Adiciona a List<char> os turnos com maior ocorrência.
                 for (var i = 0; i < turno.Length; i++)
@@ -316,32 +268,23 @@ namespace TesteAdmissional
                 var elevadoresMenorFluxo = elevadorMenosFrequentado(lista);
                 List<char> retorno = new List<char>();
                 char[] charTurnos = { 'M', 'V', 'N' };
-                string stringTurnos = new string(charTurnos);
 
                 foreach (var elevador in elevadoresMenorFluxo)
                 {
 
                     // verifica cada item comparando o elevador e registra a ocorrencia de cada turno
                     int[] turno = new int[3];
-                    foreach (var item in lista)
+                    foreach (var registro in lista)
                     {
-                        Dados registro = item;
-                        if (registro.elevador == elevador.ToString())
+                        if (registro.elevador == elevador)
                         {
-                            int posicao = stringTurnos.IndexOf(registro.turno);
+                            int posicao = Array.IndexOf(charTurnos, registro.turno);
                             turno[posicao] = turno[posicao] + 1;
                         }
                     }
 
                     // encontra a menor ocorrência
-                    int menor = turno[0];
-                    for (var i = 0; i < turno.Length; i++)
-                    {
-                        if (turno[i] < menor)
-                        {
-                            turno[i] = turno[i];
-                        }
-                    }
+                    int menor = turno.Min();
 
                     // Adiciona a List<char> os turnos com menor ocorrência.
                     for (var i = 0; i < turno.Length; i++)
@@ -353,10 +296,10 @@ namespace TesteAdmissional
                     }
 
                 }
+
                 return retorno;
             }
         }
-
 
         interface IElevadorService
         {
